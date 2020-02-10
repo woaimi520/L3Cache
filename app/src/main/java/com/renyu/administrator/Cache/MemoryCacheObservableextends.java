@@ -24,7 +24,7 @@ public class MemoryCacheObservableextends extends CacheObservable{
     };
     @Override
     public ImageBean getDataFromCache(String url) {
-        Log.d("renyu", "getDataFromMemoryCache");
+        Log.d(Tag, Tag + "three L getDataFromCache  ");
         Bitmap bitmap = mLruCache.get(url);
         return new ImageBean(bitmap, url);
     }

@@ -15,7 +15,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mImageView = findViewById(R.id.image);
-        RxImageLoader.with(this).load(url).into(mImageView);
+        mImageView.post(new Runnable() {
+            @Override
+            public void run() {
+                RxImageLoader.with(MainActivity.this).load(url).into(mImageView);
+
+            }
+        });
 
     }
 }

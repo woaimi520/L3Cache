@@ -3,6 +3,7 @@ package com.renyu.administrator.Cache;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.nfc.Tag;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -31,7 +32,9 @@ import io.reactivex.schedulers.Schedulers;
  * 日期：2020/2/10 19:13
  * 注释：从硬盘里读取
  */
-public class DiskCacheObservable extends CacheObservable{
+public class DiskCacheObservable extends CacheObservable {
+    public static final String Tag = "DiskCacheObservable";
+
     private Context mContext;
     private DiskLruCache mDiskLruCache;
     private final int maxSize = 10 * 1024 * 1024;
@@ -40,9 +43,10 @@ public class DiskCacheObservable extends CacheObservable{
         this.mContext = mContext;
         initDiskLruCache();
     }
+
     @Override
     public ImageBean getDataFromCache(String url) {
-        Log.d("renyu","getDataFromDiskCache");
+        Log.d(Tag, Tag + "three L getDataFromCache  ");
         Bitmap bitmap = getDataFromDiskLruCache(url);
         return new ImageBean(bitmap, url);
     }
@@ -59,7 +63,7 @@ public class DiskCacheObservable extends CacheObservable{
 
     }
 
-    public void initDiskLruCache(){
+    public void initDiskLruCache() {
         File cacheDir = DiskCacheUtils.getDiskCacheDir(mContext, "my_cache");
         if (!cacheDir.exists()) {
             cacheDir.mkdirs();
@@ -67,39 +71,42 @@ public class DiskCacheObservable extends CacheObservable{
         Long versionCode = DiskCacheUtils.getApplVersion(mContext);
         int versionCodeInt = (Integer) versionCode.intValue();
         try {
-            mDiskLruCache = DiskLruCache.open(cacheDir, (int)versionCodeInt, 1, maxSize);
+            mDiskLruCache = DiskLruCache.open(cacheDir, (int) versionCodeInt, 1, maxSize);
         } catch (IOException e) {
-            Log.d("renyu", "e ==" + e);
+            Log.d(Tag, Tag + "three L initDiskLruCache e = " + e);
         }
 
     }
 
     /**
      * 用key 来读取 bitmap
+     *
      * @param url
      * @return
      */
-    private Bitmap getDataFromDiskLruCache(String url){
+    private Bitmap getDataFromDiskLruCache(String url) {
         Bitmap bitmap = null;
         FileDescriptor fileDescriptor = null;
         FileInputStream fileInputStream = null;
         final String key = DiskCacheUtils.getMD5String(url);
         try {
             DiskLruCache.Snapshot snapshot = mDiskLruCache.get(key);//1 通过key 获取 快照
-            fileInputStream = (FileInputStream)snapshot.getInputStream(0); //2 通过快照 获取 文件输出来的流
-            fileDescriptor = fileInputStream.getFD();
+            if (snapshot != null) {
+                fileInputStream = (FileInputStream) snapshot.getInputStream(0); //2 通过快照 获取 文件输出来的流
+                fileDescriptor = fileInputStream.getFD();
+            }
             if (fileDescriptor != null) {
                 bitmap = BitmapFactory.decodeStream(fileInputStream);//3 流转为bitmap
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
-        }finally {
+            Log.d(Tag, Tag + "three L getDataFromDiskLruCache 1e = " + e);
+        } finally {
             if (fileInputStream != null) {
                 try {
                     fileInputStream.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.d(Tag, Tag + "three L getDataFromDiskLruCache 2e = " + e);
                 }
             }
         }
@@ -121,15 +128,14 @@ public class DiskCacheObservable extends CacheObservable{
                 mDiskLruCache.flush();//写记录数据到记录文件
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.d(Tag, Tag + "three L putDataToDiskL如Cache e = " + e);
         }
 
     }
 
 
-
     /**
-     * @param  urlString 图片的url 未转换的
+     * @param urlString    图片的url 未转换的
      * @param outputStream 输入到文件的流
      * @return
      */
@@ -139,7 +145,7 @@ public class DiskCacheObservable extends CacheObservable{
         BufferedInputStream in = null;
         try {
             final URL url = new URL(urlString);
-                urlConnection = (HttpURLConnection)url.openConnection();
+            urlConnection = (HttpURLConnection) url.openConnection();
             in = new BufferedInputStream(urlConnection.getInputStream(), 8 * 1024);
             out = new BufferedOutputStream(outputStream, 8 * 1024);//流输出到文件 需要最后  editor.commit();才会写入
             int b;
@@ -147,11 +153,9 @@ public class DiskCacheObservable extends CacheObservable{
                 out.write(b);
             }
             return true;
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }catch (IOException e) {
-            e.printStackTrace();
-        }finally {
+        }  catch (IOException e) {
+            Log.d(Tag, Tag + "three L downloadUrlToStream 1 e = " + e);
+        } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
             }
@@ -163,7 +167,7 @@ public class DiskCacheObservable extends CacheObservable{
                     in.close();
                 }
             } catch (final IOException e) {
-                e.printStackTrace();
+                Log.d(Tag, Tag + "three L downloadUrlToStream 2 e = " + e);
             }
         }
         return false;
