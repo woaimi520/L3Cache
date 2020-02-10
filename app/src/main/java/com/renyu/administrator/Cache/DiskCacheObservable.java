@@ -111,7 +111,7 @@ public class DiskCacheObservable extends CacheObservable{
         try {
             DiskLruCache.Editor editor = mDiskLruCache.edit(key);//1 得到编辑器
             if (editor != null) {
-                OutputStream outputStream = editor.newOutputStream(0);//2 得到输入文件的流
+                OutputStream outputStream = editor.newOutputStream(0);//2 得到输入文件的流 这个留不是直接输入的
                 boolean isSuccess = downloadUrlToStream(imageBean.getUrl(), outputStream);
                 if (isSuccess) {
                     editor.commit();//3 写入文件

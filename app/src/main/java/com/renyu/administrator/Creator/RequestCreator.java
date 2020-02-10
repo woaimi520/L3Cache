@@ -22,7 +22,7 @@ public class RequestCreator {
 
     public RequestCreator(Context context){
         mMemoryCacheObservableextends = new MemoryCacheObservableextends();
-        mDiskCacheObservable = new DiskCacheObservable();
+        mDiskCacheObservable = new DiskCacheObservable(context);
         mNetworkCacheObservable = new NetworkCacheObservable();
     }
 
