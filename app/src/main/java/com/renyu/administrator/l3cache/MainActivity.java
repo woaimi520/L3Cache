@@ -2,7 +2,9 @@ package com.renyu.administrator.l3cache;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.renyu.administrator.Loader.RxImageLoader;
@@ -19,6 +21,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 RxImageLoader.with(MainActivity.this).load(url).into(mImageView);
+
+            }
+        });
+        mImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, Main2Activity.class);
+                startActivity(intent);
 
             }
         });
