@@ -20,19 +20,22 @@ public class RxImageLoader {
     static RxImageLoader singleton;
     private String mUrl;
     private RequestCreator requestCreator;
+    private Context mContext;
 
     private RxImageLoader(Builder builder) {
-        requestCreator = new RequestCreator(builder.mContext);
+
     }
 
     public static RxImageLoader with(Context context) {
         if (singleton == null) {
             synchronized (RxImageLoader.class) {
                 if (singleton == null) {
-                    singleton = new Builder(context).build();
+                    singleton = new Builder().build();
                 }
             }
         }
+        singleton.mContext = context;
+
         return singleton;
     }
 
@@ -42,6 +45,7 @@ public class RxImageLoader {
     }
 
     public void into(final ImageView imageView) {
+        requestCreator = new RequestCreator(mContext);
         Observable.concat(
                 requestCreator.getImageFromMemory(mUrl),
                 requestCreator.getImageFromDisk(mUrl),
@@ -75,10 +79,8 @@ public class RxImageLoader {
 
 
     public static class Builder {
-        private Context mContext;
 
-        public Builder(Context context) {
-            this.mContext = context;
+        public Builder() {
         }
 
         public RxImageLoader build() {
