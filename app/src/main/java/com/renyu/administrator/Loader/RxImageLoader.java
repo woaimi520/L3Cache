@@ -22,21 +22,24 @@ public class RxImageLoader {
     static RxImageLoader singleton;
     private String mUrl;
     private RequestCreator requestCreator;
-    private  WeakReference<Context> mWeakContext;
 
-    private RxImageLoader() {
-
+    private RxImageLoader(Context context) {
+        requestCreator = new RequestCreator(context);
     }
 
-    public static RxImageLoader with(Context context) {
+    public static RxImageLoader init(Context context) {
+
         if (singleton == null) {
             synchronized (RxImageLoader.class) {
                 if (singleton == null) {
-                    singleton = new RxImageLoader();
+                    singleton = new RxImageLoader(new WeakReference<Context>(context).get());
                 }
             }
         }
-        singleton.mWeakContext = new WeakReference<>(context);
+
+        return singleton;
+    }
+    public static RxImageLoader getInstance(){
         return singleton;
     }
 
@@ -45,13 +48,26 @@ public class RxImageLoader {
         return singleton;
     }
 
-    public void into(final ImageView imageView) {
-        requestCreator = new RequestCreator(mWeakContext.get());
-        Observable.concat(
-                requestCreator.getImageFromMemory(mUrl),
-                requestCreator.getImageFromDisk(mUrl),
-                requestCreator.getImageFromNetwork(mUrl)
-        ).first(new ImageBean(null, mUrl)).toObservable().subscribe(new Observer<ImageBean>() {
+    /**
+     * @param imageView view
+     * @param isPriorityNet 是否网络优先 true 网络优先 false 本地disk 优先  meimory优先级失踪最高
+     */
+    public void into(final ImageView imageView,boolean isPriorityNet) {
+        Observable<ImageBean> observable;
+        if(isPriorityNet) {
+            observable = Observable.concat(
+                    requestCreator.getImageFromMemory(mUrl),
+                    requestCreator.getImageFromNetwork(mUrl),
+                    requestCreator.getImageFromDisk(mUrl)
+            );
+        }else{
+            observable = Observable.concat(
+                    requestCreator.getImageFromMemory(mUrl),
+                    requestCreator.getImageFromDisk(mUrl),
+                    requestCreator.getImageFromNetwork(mUrl)
+            );
+        }
+        observable.first(new ImageBean(null, mUrl)).toObservable().subscribe(new Observer<ImageBean>() {
             @Override
             public void onSubscribe(Disposable d) {
 

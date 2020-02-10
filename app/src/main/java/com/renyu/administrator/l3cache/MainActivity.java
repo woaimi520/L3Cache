@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         mImageView.post(new Runnable() {
             @Override
             public void run() {
-                RxImageLoader.with(MainActivity.this).load(url).into(mImageView);
+                RxImageLoader.getInstance().load(url).into(mImageView,false);
 
             }
         });

@@ -60,7 +60,7 @@ public class DiskCacheObservable extends CacheObservable {
 
             @Override
             public void subscribe(ObservableEmitter<ImageBean> emitter) throws Exception {
-                putDataToDiskL如Cache(imageBean);
+                putDataToDiskLToCache(imageBean);
             }
         }).subscribeOn(Schedulers.io()).subscribe();
 
@@ -116,7 +116,7 @@ public class DiskCacheObservable extends CacheObservable {
         return bitmap;
     }
 
-    private void putDataToDiskL如Cache(ImageBean imageBean) {
+    private void putDataToDiskLToCache(ImageBean imageBean) {
         String key = DiskCacheUtils.getMD5String(imageBean.getUrl());
         try {
             DiskLruCache.Editor editor = mDiskLruCache.edit(key);//1 得到编辑器

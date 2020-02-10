@@ -17,7 +17,7 @@ import io.reactivex.schedulers.Schedulers;
  * 注释：
  */
 public abstract class CacheObservable {
-    public static final String Tag = "CacheObservable";
+
     public Observable<ImageBean> getImage(final String url){
         return Observable.create(new ObservableOnSubscribe<ImageBean>() {
             @Override
