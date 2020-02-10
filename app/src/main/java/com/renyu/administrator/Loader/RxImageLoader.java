@@ -50,14 +50,15 @@ public class RxImageLoader {
 
     /**
      * @param imageView view
-     * @param isPriorityNet 是否网络优先 true 网络优先 false 本地disk 优先  meimory优先级失踪最高
+     * @param isPriorityNet 是否网络优先  true 网络优先 false 本地优先（memorry - 》disk）
      */
     public void into(final ImageView imageView,boolean isPriorityNet) {
         Observable<ImageBean> observable;
         if(isPriorityNet) {
             observable = Observable.concat(
-                    requestCreator.getImageFromMemory(mUrl),
+                    //优先从网络获取
                     requestCreator.getImageFromNetwork(mUrl),
+                    requestCreator.getImageFromMemory(mUrl),
                     requestCreator.getImageFromDisk(mUrl)
             );
         }else{
