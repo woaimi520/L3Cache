@@ -7,6 +7,8 @@ import android.widget.ImageView;
 import com.renyu.administrator.Bean.ImageBean;
 import com.renyu.administrator.Creator.RequestCreator;
 
+import java.lang.ref.WeakReference;
+
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -20,9 +22,9 @@ public class RxImageLoader {
     static RxImageLoader singleton;
     private String mUrl;
     private RequestCreator requestCreator;
-    private Context mContext;
+    private  WeakReference<Context> mWeakContext;
 
-    private RxImageLoader(Builder builder) {
+    private RxImageLoader() {
 
     }
 
@@ -30,12 +32,11 @@ public class RxImageLoader {
         if (singleton == null) {
             synchronized (RxImageLoader.class) {
                 if (singleton == null) {
-                    singleton = new Builder().build();
+                    singleton = new RxImageLoader();
                 }
             }
         }
-        singleton.mContext = context;
-
+        singleton.mWeakContext = new WeakReference<>(context);
         return singleton;
     }
 
@@ -45,7 +46,7 @@ public class RxImageLoader {
     }
 
     public void into(final ImageView imageView) {
-        requestCreator = new RequestCreator(mContext);
+        requestCreator = new RequestCreator(mWeakContext.get());
         Observable.concat(
                 requestCreator.getImageFromMemory(mUrl),
                 requestCreator.getImageFromDisk(mUrl),
@@ -77,16 +78,5 @@ public class RxImageLoader {
 
     }
 
-
-    public static class Builder {
-
-        public Builder() {
-        }
-
-        public RxImageLoader build() {
-            return new RxImageLoader(this);
-        }
-
-    }
 
 }
