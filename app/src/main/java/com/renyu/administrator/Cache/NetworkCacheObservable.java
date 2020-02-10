@@ -23,6 +23,9 @@ public class NetworkCacheObservable extends CacheObservable{
     public ImageBean getDataFromCache(String url) {
         Log.d(Tag, Tag + "three L getDataFromCache  ");
         Bitmap bitmap = downloadImage(url);
+        if (bitmap != null) {
+            Log.d(Tag, Tag + "three L 从网络获取数据 ");
+        }
         return new ImageBean(bitmap, url);
     }
 

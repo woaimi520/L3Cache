@@ -26,6 +26,9 @@ public class MemoryCacheObservableextends extends CacheObservable{
     public ImageBean getDataFromCache(String url) {
         Log.d(Tag, Tag + "three L getDataFromCache  ");
         Bitmap bitmap = mLruCache.get(url);
+        if (bitmap != null) {
+            Log.d(Tag, Tag + "three L 从memory 获取数据 ");
+        }
         return new ImageBean(bitmap, url);
     }
 

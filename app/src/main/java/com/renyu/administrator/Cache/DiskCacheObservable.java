@@ -48,6 +48,9 @@ public class DiskCacheObservable extends CacheObservable {
     public ImageBean getDataFromCache(String url) {
         Log.d(Tag, Tag + "three L getDataFromCache  ");
         Bitmap bitmap = getDataFromDiskLruCache(url);
+        if (bitmap != null) {
+            Log.d(Tag, Tag + "three L 从sdcard 获取数据 ");
+        }
         return new ImageBean(bitmap, url);
     }
 
